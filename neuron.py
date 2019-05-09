@@ -7,8 +7,8 @@ class default:
     INENERGY = -3
     K_ADD = 2
 
-NEURONTYPEEN = 0
-NEURONTYPEIN = 1
+NEURONTYPEEN = 77
+NEURONTYPEIN = 89
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtWidgets import *
@@ -42,16 +42,26 @@ class Neuron:
                     l.append(backpack)
             self.backpacks = l
 
+        def repr(self,group):
+            return (group.neurons.index(self.to), self.k, self.t, [x.repr() for x in self.actpacks], [x.repr() for x in self.backpacks])
+
+
 
     class ActPack:
         def __init__(self,add_value,left_t):
             self.add_value = add_value
             self.left_t = left_t
 
+        def repr(self): # myrepr
+            return (self.add_value, self.left_t)
+
 
     class BackPack:
         def __init__(self,left_t):      # 这里后端神经元不影响权值变化
             self.left_t = left_t
+
+        def repr(self):
+            return (self.left_t,)
 
 
     def __init__(self,neurontype):
@@ -81,6 +91,9 @@ class Neuron:
         if self.value:
             connect.k += k_ADD
 
+    def repr(self,group):
+        return ("EN" if self.type == NEURONTYPEEN else "IN", self.value, [connect.repr(group) for connect in self.connects])
+
 #~ class EN():
 def EN():return Neuron(NEURONTYPEEN)
 def IN():return Neuron(NEURONTYPEIN)
@@ -102,4 +115,10 @@ class Group:
 
 
 
+    def serialize(self):   # myrepr
+        return str([neuron.repr(self) for neuron in self.neurons])       #  应该搞个局部但穿透调用的变量（全局也好）
+
+
+    def unserialize(f):
+        return eval(f)
 

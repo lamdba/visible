@@ -11,11 +11,14 @@ class E:
         self.t = 0
         self.label_2.setText(str(0))
 
-        for neuron in self.group.neurons:
-            neuron.value = False
-        self.scene.update()
+        self.scene.clear()
+
 
         self.d_or_t = 0
+        self.scene.d_t = True
+
+        self.setWindowTitle("简单时间离散神经元模型可视化 - 设计")
+        #~ self.toolbar.show()
 
 
     @pyqtSlot()
@@ -23,6 +26,9 @@ class E:
         self.button_test.hide()
         self.button_design.show()
         self.d_or_t = 1
+        self.scene.d_t = False
+
+        self.setWindowTitle("简单时间离散神经元模型可视化 - 测试")
 
     @pyqtSlot()
     def on_button_cursor_clicked(self):
@@ -54,8 +60,7 @@ class E:
 
     @pyqtSlot()
     def on_button_next_clicked(self):
-        self.group.evo()
-        self.scene.update()
+        self.scene.evo()
         self.t += 1
         self.label_2.setText(str(self.t))
 

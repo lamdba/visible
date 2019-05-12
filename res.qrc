@@ -1,0 +1,11 @@
+<RCC>
+  <qresource prefix="">
+    <file>res/continue.png</file>
+    <file>res/cursor.png</file>
+    <file>res/en.png</file>
+    <file>res/icon.png</file>
+    <file>res/in.png</file>
+    <file>res/pause.png</file>
+    <file>res/connect.png</file>
+  </qresource>
+</RCC>

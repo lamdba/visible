@@ -116,9 +116,14 @@ class Ui_MainWindow:
         Ui_MainWindow.retranslateUi(self,MainWindow)    # 此行也被修改
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
+        # eric中未能发现toolbar
+
+        self.toolbar = self.addToolBar('mytoolbar')
+
+
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
-        MainWindow.setWindowTitle(_translate("MainWindow", "简单时间离散神经元模型可视化"))
+        MainWindow.setWindowTitle(_translate("MainWindow", "简单时间离散神经元模型可视化 - 设计"))
         self.button_design.setText(_translate("MainWindow", "设计"))
         self.button_test.setText(_translate("MainWindow", "测试"))
         self.label.setText(_translate("MainWindow", "时刻："))

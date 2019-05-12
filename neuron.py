@@ -115,10 +115,9 @@ class Group:
 
 
 
-    def serialize(self):   # myrepr
-        return str([neuron.repr(self) for neuron in self.neurons])       #  应该搞个局部但穿透调用的变量（全局也好）
 
 
-    def unserialize(f):
-        return eval(f)
+
+
+
 

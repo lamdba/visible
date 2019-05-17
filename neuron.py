@@ -3,17 +3,18 @@
 
 class default:
     THRESHOLD = 1
-    ENENERGY = 2
-    INENERGY = -3
+    ENENERGY = 3
+    INENERGY = -2
     K_ADD = 2
+    K_0 = 10
 
 NEURONTYPEEN = 77
 NEURONTYPEIN = 89
 
-from PyQt5 import QtCore, QtGui, QtWidgets
-from PyQt5.QtWidgets import *
-from PyQt5.QtGui import *
-from PyQt5.QtCore import *
+#~ from PyQt5 import QtCore, QtGui, QtWidgets
+#~ from PyQt5.QtWidgets import *
+#~ from PyQt5.QtGui import *
+#~ from PyQt5.QtCore import *
 
 class Neuron:
     class Connect:

@@ -89,7 +89,7 @@ class MyScene(QGraphicsScene):
     def __init__(self,group,d_t):
         super().__init__()
         self.choosed = None
-        self._dp = None    # 点击位置和实际点的偏差
+        self._dp = None    # 点击位置和实际点的偏差（move模式寄存用）
         self.connect = None # 创建连接时临时要绘制的连接
         self.setSceneRect(QRectF(0,0,760,700))
         self.group = group  # 初始group
@@ -110,12 +110,14 @@ class MyScene(QGraphicsScene):
             neuron.value = False
         self.update()
 
-    def serialize(self):
-        with open("F:/visible-group.txt", 'w') as f:
+    def serialize(self,temp = False):
+        path = "F:/visible-group.txt" if not temp else "F:/visible-group-temp"
+        with open(path, 'w') as f:
             f.write(group_serialize(self.group))
 
-    def unserialize(self):
-        with open("F:/visible-group.txt", 'r') as f:
+    def unserialize(self,temp = False):
+        path = "F:/visible-group.txt" if not temp else "F:/visible-group-temp"
+        with open(path, 'r') as f:
             s = f.read()
             neurons = group_unserialize(s)
             self.group.neurons = neurons
@@ -125,87 +127,91 @@ class MyScene(QGraphicsScene):
             self.addItem(self.allconnect)       # 对象管理同步
             for neuron in neurons:
                 self.addItem(neuron)
-
             self.update()
 
+    def mousePressEvent_move(self,event):   # 为了表驱动
+        items = self.items(event.scenePos())
+        if items:
+            item = items[0]
+            self.choosed = item
+            self._dp = item.scenePos() - event.scenePos()
+
+    def mousePressEvent_setvalue(self,event):
+        items = self.items(event.scenePos())
+        if items:
+            item = items[0]
+            item.value = not item.value
+            self.update()
+
+    def mousePressEvent_newen(self,event):
+        neuron = ShellEN(event.scenePos())
+        self.group.neurons.append(neuron)
+        self.addItem(neuron)
+
+    def mousePressEvent_newin(self,event):
+        neuron = ShellIN(event.scenePos())
+        self.group.neurons.append(neuron)
+        self.addItem(neuron)
+
+    def mousePressEvent_connect(self,event):
+        items = self.items(event.scenePos())
+        if items:
+            item = items[0]
+            self.choosed = item  # 暂时使用同一个寄存器
+
+
+    TABLE_mousePressEvent = [mousePressEvent_move, mousePressEvent_setvalue,
+        mousePressEvent_newen, mousePressEvent_newin, mousePressEvent_connect]
+
     def mousePressEvent(self,event):
-        if self.d_t: # design
-            flag = self.mod
-            if flag == 0:
-                #~ self.master.choose_button(0)    # 应对一个bug（不当有用）
-                items = self.items(event.scenePos())
-                if items:
-                    item = items[0]
-                    self.choosed = item
-                    self._dp = item.scenePos() - event.scenePos()
-            elif flag == 1:
-                neuron = ShellEN(event.scenePos())
-                self.group.neurons.append(neuron)
-                self.addItem(neuron)
-            elif flag == 2:
-                neuron = ShellIN(event.scenePos())
-                self.group.neurons.append(neuron)
-                self.addItem(neuron)
-            elif flag == 3:
-                items = self.items(event.scenePos())
-                if items:
-                    item = items[0]
-                    self.choosed = item  # 暂时使用同一个寄存器
-        else:
+        self.TABLE_mousePressEvent[self.mod](self,event)    # 注意是向类方法传参
+
+
+    def mouseMoveEvent_move(self,event):   # 未使用表驱动
+        if self.choosed:
+            self.choosed.setPos(event.scenePos()+self._dp)
+            self.update()
+
+    def mouseMoveEvent_connect(self,event):
+        if self.choosed:
             items = self.items(event.scenePos())
+            l = self.choosed.connects
             if items:
                 item = items[0]
-                item.value = not item.value
-
-                self.update()
-
-
-
-    def mouseMoveEvent(self,event):     # 下一次可以通过父组件来分配，以避开master
-        if self.d_t: # design
-            flag = self.mod
-            if flag == 0:
-                if self.choosed:
-                    self.choosed.setPos(event.scenePos()+self._dp)
+                if l and hasattr(l[-1],"temp"): # 已经有一个临时连接
+                    pass
+                elif item is self.choosed:
+                    pass
+                else:
+                    connect = Neuron.Connect(10,1,item)
+                    connect.temp = True # 添加一个属性作为标记
+                    l.append(connect)
                     self.update()
-            elif flag == 3:
-                if self.choosed:
-                    items = self.items(event.scenePos())
-                    l = self.choosed.connects
-                    if items:
-                        item = items[0]
-                        if l and hasattr(l[-1],"temp"): # 已经有一个临时连接
-                            pass
-                        elif item is self.choosed:
-                            pass
-                        else:
-                            connect = Neuron.Connect(10,1,item)
-                            connect.temp = True # 添加一个属性作为标记
-                            l.append(connect)
-                            self.update()
-                    else:
-                        if (l and hasattr(l[-1],"temp")):
-                            l.pop()
-                            self.update()
-        else:   # design
-            pass
+            else:
+                if (l and hasattr(l[-1],"temp")):
+                    l.pop()
+                    self.update()
 
 
+    def mouseMoveEvent(self,event):
+        mod = self.mod
+        if mod == 0:
+            self.mouseMoveEvent_move(event)
+        elif mod == 4:
+            self.mouseMoveEvent_connect(event)
 
-    def mouseReleaseEvent(self, event):
-        if self.d_t: # design
-            flag = self.mod
-            if flag == 0:
+
+    def mouseReleaseEvent(self, event):  # 也未使用表驱动
+        mod = self.mod
+        if mod == 0:    # move
+            self.choosed = None
+            self._dp = None
+        elif mod == 4:  # connect
+            if self.choosed is not None:
+                l = self.choosed.connects
+                if l and hasattr(l[-1],"temp"):
+                    delattr(l[-1],"temp")
                 self.choosed = None
-                self._dp = None
-            elif flag == 3:
-                if self.choosed is not None:
-                    l = self.choosed.connects
-                    if l and hasattr(l[-1],"temp"):
-                        delattr(l[-1],"temp")
-                    self.choosed = None
-        else:
-            pass
 
 
 class MyView(QGraphicsView):

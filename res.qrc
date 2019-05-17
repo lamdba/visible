@@ -7,5 +7,6 @@
     <file>res/in.png</file>
     <file>res/pause.png</file>
     <file>res/connect.png</file>
+    <file>res/set.png</file>
   </qresource>
 </RCC>

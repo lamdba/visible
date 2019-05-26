@@ -12,8 +12,8 @@ class MyMainWindow(QMainWindow):
         Ui_MainWindow.setupUi(self,self)
 
         # model/state(scene)
-        n1 = ShellEN(QPoint(200,200))
-        n2 = ShellIN(QPoint(300,400))
+        n1 = ShellEN(QPoint(200,200),False)
+        n2 = ShellIN(QPoint(300,400),False)
         n1.connects.append(Neuron.Connect(10,1,n2))
         group = Group([n1,n2])
         #~ s = group.serialize()

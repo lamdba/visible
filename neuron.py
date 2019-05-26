@@ -5,7 +5,7 @@ class default:
     THRESHOLD = 1
     ENENERGY = 3
     INENERGY = -2
-    K_ADD = 2
+    K_ADD = 0
     K_0 = 10
 
 NEURONTYPEEN = 77

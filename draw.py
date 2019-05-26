@@ -31,6 +31,10 @@ def drawconnects(painter, neurons):
             end = connect.to.scenePos()
             drawarrow(painter,begin, end)
 
+def drawoneconnect(painter, n1, n2):
+    painter.setPen(PEN)
+    drawarrow(painter,n1.scenePos(), n2.scenePos())
+
 FBRUSH = QBrush(QColor.fromRgb(48,48,48))
 TBRUSH = QBrush(QColor.fromRgb(255,255,255))
 #~ brush_true = QBrush(QColor.fromRgb(208,208,208))

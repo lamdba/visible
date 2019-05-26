@@ -14,7 +14,7 @@ class E:
         self.t = 0
         self.label_2.setText(str(0))
 
-        self.scene.clear()
+        #~ self.scene.clear()
 
 
         self.d_or_t = 0
